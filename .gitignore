@@ -1,0 +1,27 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Generated media and model caches
+outputs/*
+!outputs/.gitkeep
+models/
+.cache/
+.huggingface/
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Local logs
+*.log

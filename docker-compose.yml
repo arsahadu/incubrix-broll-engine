@@ -1,0 +1,45 @@
+
+services:
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    env_file:
+      - .env
+    environment:
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434/api/chat}
+      PIXABAY_API_KEY: ${PIXABAY_API_KEY:?Set PIXABAY_API_KEY in .env}
+      FFMPEG_BINARY: /usr/bin/ffmpeg
+      FFPROBE_BINARY: /usr/bin/ffprobe
+      TTS_ENGINE: espeak
+      ESPEAK_VOICE: en-in
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/workspace/outputs
+      - hf_cache:/models/huggingface
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    build: .
+    command: streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
+    environment:
+      BROLL_API_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  hf_cache:
