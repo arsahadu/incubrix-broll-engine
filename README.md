@@ -25,6 +25,7 @@ uploaded narration into a B-roll video workflow.
 -   Docker and Docker Compose setup for local development.
 
 ## Architecture
+<img width="1376" height="768" alt="Gemini_Generated_Image_cpxs1ucpxs1ucpxs" src="https://github.com/user-attachments/assets/dc071c40-99a0-4814-8b70-a56683f9a7ad" />
 
 ## Project structure
 
@@ -37,7 +38,7 @@ uploaded narration into a B-roll video workflow.
 │   └── services/
 ├── frontend/
 │   └── app.py
-├── outputs/                 # Generated media; excluded from Git
+├── outputs/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
