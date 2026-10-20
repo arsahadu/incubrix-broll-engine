@@ -151,16 +151,20 @@ def ready():
 @app.post("/api/v1/broll/jobs", status_code=202)
 @limiter.limit("5/minute")
 def create_job(
-    request: BrollRequest,
+    request: Request,
+    payload: BrollRequest,
     background_tasks: BackgroundTasks,
-    idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+    idempotency_key: str | None = Header(
+        default=None,
+        alias="Idempotency-Key",
+    ),
 ):
     job_id = str(uuid4())
-    fingerprint = _fingerprint(request.model_dump())
+    fingerprint = _fingerprint(payload.model_dump())
 
     actual_id, created = _register_job(
         job_id,
-        request,
+        payload,
         None,
         "Job accepted",
         idempotency_key,
@@ -168,7 +172,12 @@ def create_job(
     )
 
     if created:
-        background_tasks.add_task(run_pipeline, actual_id, request, jobs)
+        background_tasks.add_task(
+            run_pipeline,
+            actual_id,
+            payload,
+            jobs,
+        )
 
     return {
         "job_id": actual_id,
@@ -179,7 +188,6 @@ def create_job(
             else "Returning existing job for this idempotency key"
         ),
     }
-
 
 
 @app.get("/api/v1/broll/jobs/{job_id}")
